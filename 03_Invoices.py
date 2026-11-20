@@ -1,16 +1,19 @@
 
 import streamlit as st
 from db import query_df, execute
-from datetime import date
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 import uuid
 
 st.title("🧾 Invoices")
+
+last_month_end = datetime.now(ZoneInfo("America/Chicago")).date().replace(day=1) - timedelta(days=1)
 
 with st.form("inv_form", clear_on_submit=True):
     st.subheader("Add an Invoice (header)")
     counterparty_id = st.text_input("Counterparty ID")
     invoice_date = st.date_input("Invoice Date", value=date.today())
-    period = st.date_input("Billing Period (start and end)", value=(date.today().replace(day=1), date.today()))
+    period = st.date_input("Billing Period (start and end)", value=(last_month_end.replace(day=1), last_month_end))
     category = st.selectbox("Category", ["commodity","transport","storage","park-loan","imbalance","fee","tax"])
     amount = st.number_input("Amount (pre-tax)", step=0.01, format="%.2f")
     tax_amount = st.number_input("Tax Amount", step=0.01, format="%.2f")
